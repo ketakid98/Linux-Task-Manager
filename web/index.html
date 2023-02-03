@@ -1,0 +1,172 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title> Linux Task Manager </title>
+        <meta name=" viewport" content="width=device-width, initial-scale=1.0">
+
+        <script type="text/javascript" src="eel.js"></script>
+        <script type="text/javascript" src="./js/jquery-3.6.0.min.js"></script>
+        <script type="text/javascript" src="./js/bootstrap.bundle.min.js"></script>
+        <script type="text/javascript" src="./js/datatables.min.js"></script>
+        <script type="text/javascript" src="./js/script.js"></script>
+
+        <link rel="stylesheet" href="./css/bootstrap.min.css">
+        <link rel="stylesheet" href="./css/datatables.min.css">
+        <link rel="stylesheet" href="./css/styles.css">
+    </head>
+    <body>
+        <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
+					<div class="container-fluid">
+						<a class="navbar-brand">Linux Task Manager</a>
+						<select class="form-select" id="global-interval" style="width: 100px" onchange="setGlobalInterval()">
+							<option selected value="1">1 sec</option>
+							<option value="5">5 sec</option>
+							<option value="10">10 sec</option>
+							<option value="30">30 sec</option>
+						</select>
+						<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+							<span class="navbar-toggler-icon"></span>
+						</button>
+						<div class="collapse navbar-collapse justify-content-end" id="navbarNavAltMarkup">
+							<div class="navbar-nav">
+								<a class="nav-link active" onclick="showDiv('cpu')" id="nav-cpu">CPU Statistics</a>
+								<a class="nav-link" onclick="showDiv('disk')" id="nav-disk">Disk I/O Statistics</a>
+								<a class="nav-link" onclick="showDiv('network')" id="nav-network">Network Statistics</a>
+								<a class="nav-link" onclick="showDiv('process')" id="nav-process">Process Statistics</a>
+								<a class="nav-link" onclick="showDiv('keylogger')" id="nav-keylogger">Keylogger</a>
+							</div>
+						</div>
+					</div>
+				</nav>
+
+				<div class="container-fluid main-div" id="cpu">
+					<h3 class="mt-2 text-center">CPU Statistics</h3>
+					<div class="row" id="cpu-stats-card">
+					</div>
+					<div class="row">
+						<div class="col-sm-3"></div>
+						<div class="col-sm-6 text-center mt-2">
+							<p class="lead">
+								Interrupts: <span id="interrupt_val"></span>
+							</p>
+							<p class="lead">
+								Context Switches: <span id="context_switch_val"></span>
+							</p>
+						</div>
+						<div class="col-sm-3">
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-4"></div>
+						<div class="col-sm-4">
+							<div class="card">
+								<div class="card-body">
+									<h5 class="card-title">Memory Statistics</h5>
+									<p class="card-text">Total Memory: <span id="total_memory"></span></p>
+									<p class="card-text">Used Memory: <span id="used_memory"></span></p>
+									<p class="card-text">Memory Utilization: <span id="util_memory"></span></p>
+								</div>
+							</div>
+						</div>
+						<div class="col-sm-4"></div>
+					</div>
+				</div>
+
+				<div class="container-fluid main-div div-invisible" id="disk">
+					<h3 class="mt-2 text-center">Disk Statistics</h4>
+					<div class="row" id="disk-stats-card">
+					</div>
+				</div>
+
+				<div class="container-fluid main-div div-invisible" id="network">
+					<h3 class="mt-2 text-center">Network Statistics</h3>
+					<h5 class="mt-2">Network Devices:</h5>
+					<div class="row" id="network-devices-card">
+					</div>
+					<div class="row">
+						<div class="col-sm-2"></div>
+						<div class="col-sm-4" id="established-tcp"></div>
+						<div class="col-sm-4" id="active-tcp"></div>
+						<div class="col-sm-2"></div>
+					</div>
+					<h5 class="mt-2">TCP Connections:</h5>
+					<div class="row">
+						<table id="tcp-table" class="table table-striped" style="width:100%">
+							<thead>
+									<tr>
+											<th>ID</th>
+											<th>Inode</th>
+											<th>User Id</th>
+											<th>User Name</th>
+											<th>Program</th>
+											<th>Source Hostname</th>
+											<th>Source IP</th>
+											<th>Source Port</th>
+											<th>Destination Hostname</th>
+											<th>Destination IP</th>
+											<th>Destination Port</th>
+									</tr>
+							</thead>
+							<tbody id="tcp_table_body">
+							</tbody>
+						</table>
+					</div>
+					<h5 class="mt-2">UDP Connections:</h5>
+					<div class="row">
+						<table id="udp-table" class="table table-striped" style="width:100%">
+							<thead>
+								<tr>
+									<th>ID</th>
+									<th>Inode</th>
+									<th>User Id</th>
+									<th>User Name</th>
+									<th>Program</th>
+									<th>Source Hostname</th>
+									<th>Source IP</th>
+									<th>Source Port</th>
+									<th>Destination Hostname</th>
+									<th>Destination IP</th>
+									<th>Destination Port</th>
+								</tr>
+							</thead>
+							<tbody id="udp_table_body">
+							</tbody>
+						</table>
+					</div>	
+				</div>
+
+				<div class="container-fluid main-div div-invisible" id="process">
+					<h3 class="mt-2 text-center">Process Statistics</h3>
+					<div class="row">
+						<table id="process-table" class="table table-striped" style="width:100%">
+							<thead>
+								<tr>
+									<th>Process ID</th>
+									<th>Process Name</th>
+									<th>User Name</th>
+									<th>Inode</th>
+									<th>User Mode Utilization</th>
+									<th>System Mode Utilization</th>
+									<th>Total Utilization</th>
+									<th>Virtual Memory Utilization</th>
+									<th>Physical Memory Utilization</th>
+								</tr>
+							</thead>
+							<tbody id="process_table_body">
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+				<div class="container-fluid main-div div-invisible" id="keylogger" onclick="openKeylogger()">
+					<h3 class="mt-2 text-center">Keylogger</h3>
+					<div class="row">
+						<button id="logger-btn">Switch On Keylogger</button>
+						<div id="logger-val">
+						</div>
+					</div>
+				</div>
+    </body>
+
+
+</html>
